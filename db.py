@@ -59,3 +59,12 @@ class DB:
         self.cursor.execute(query,[month])
         info = self.cursor.fetchall()
         return info
+    
+
+    def hangman(self):
+        query = "SELECT word,translated_word FROM cards"
+        self.cursor.execute(query)
+        words = dict(self.cursor.fetchall())
+        randomed_word = random.choice(list(words))
+        randomed_word_value = words[randomed_word]
+        return randomed_word,randomed_word_value

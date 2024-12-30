@@ -6,6 +6,7 @@ class Graph:
         self.values = values
 
     def show(self):
+        plt.figure(figsize=(13,8))
         plt.bar(self.month,self.values,label="Слова")
         plt.xlabel("Месяц года")
         plt.ylabel("Слова в месяц")

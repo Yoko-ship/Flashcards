@@ -1,11 +1,11 @@
 from tkinter import *
 from tkinter import ttk
-import random
 import time
 from db import DB
 from graf import Graph
 from datetime import datetime
 import locale
+from hangman import Hangman
 locale.setlocale(locale.LC_TIME, 'ru')
 today = datetime.today()
 month = today.month
@@ -60,6 +60,10 @@ class Interface():
         self.error = StringVar()
         Label(self.exercise_word,textvariable=self.success,foreground="green",font=self.font).pack(side="bottom")
         Label(self.exercise_word,textvariable=self.error,foreground="red",font=self.font).pack(side="bottom")
+
+        hangman_layer = ttk.Frame(notebook)
+        notebook.add(hangman_layer,text="Виселица")
+        Button(hangman_layer,text="Начать игру",command=self.start_hangman).pack(anchor="center")
     def get_informations(self):
         english_word = self.original_word.get()
         translated_word = self.translated_word_entry.get()
@@ -115,11 +119,64 @@ class Interface():
 
     
     def show_graph(self):
-        test = ["Декабрь","Январь","Февраль","Март"]
-        something = self.database.get_for_graph(month)
-        size = [len(something)]
-        self.graph = Graph(test,size)
+        month = []
+        sizes = []
+        for i in range(1,13):
+            match i:
+                case 1:
+                    i = "Январь"
+                case 2:
+                    i = "Февраль"
+                case 3:
+                    i = "Март"
+                case 4:
+                    i = "Апрель"
+                case 5:
+                    i = "Май"
+                case 6:
+                    i = "Июнь"
+                case 7:
+                    i = "Июль"
+                case 8:
+                    i = "Август"
+                case 9:
+                    i = "Сентябрь"
+                case 10:
+                    i = "Октябрь"
+                case 11:
+                    i = "Ноябрь"
+                case 12:
+                    i = "Декабрь"
+                    
+                    
+            something = self.database.get_for_graph(i)
+            size = len(something)
+            month.append(i)
+            sizes.append(size)
+
+        self.graph = Graph(month,sizes)
         self.graph.show()
+
+    def start_hangman(self):
+        running = True
+        if self.root:
+            self.root.destroy()
+            self.root = None
+        while running:
+            words = self.database.hangman()
+            hangman_word = words[0]
+            hangman_word_translation = words[1]
+            hangman = Hangman()
+            hangman.play(hangman_word,hangman_word_translation)
+            play_again = input("Сыграть снова: y || n: ")
+            if play_again.lower() == "y":
+                self.start_hangman()
+            else:
+                running = False
+        
+
+
+        
 
 tkinter = Interface()
 tkinter.set_up("Flash-Cards","800x800")
